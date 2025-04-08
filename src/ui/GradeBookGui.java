@@ -8,11 +8,11 @@ import java.awt.event.*;
  * This class is the main Gradebook GUI panel that contains views for both student and teacher users.
  * It uses CardLayout to switch between login, student, and teacher panels within a single window.
  */
-public class GradebookGUI extends JPanel {
+public class GradeBookGui extends JPanel {
     private CardLayout cardLayout;
     private JPanel mainPanel;
 
-    public GradebookGUI() {
+    public GradeBookGui() {
         setLayout(new BorderLayout());
 
         cardLayout = new CardLayout();
