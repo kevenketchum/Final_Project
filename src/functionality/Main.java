@@ -2,6 +2,9 @@ package functionality;
 
 import logic.SecurityManager;
 import logic.AutoSaveService;
+import ui.GradebookGUI; 
+import javax.swing.*;   
+
 import java.util.Scanner;
 
 public class Main {
@@ -13,7 +16,7 @@ public class Main {
         securityManager = new SecurityManager();
 
         System.out.println("Welcome to the Project Simulator!");
-        System.out.println("Please choose from: [register | login | exit]");
+        System.out.println("Please choose from: [register | login | gui | exit]"); // 👈 Added 'gui'
 
         boolean isRunning = true;
         boolean loggedIn = false;
@@ -46,8 +49,7 @@ public class Main {
                     if (success) {
                         loggedIn = true;
                         currentUser = username;
-                        System.out.println("Login successful. Welcome back, "
-                        + username + "!");
+                        System.out.println("Login successful. Welcome back, " + username + "!");
                         startAutoSave();
                         simulateSession();
                         stopAutoSave();
@@ -58,13 +60,24 @@ public class Main {
                     }
                     break;
 
+                case "gui": // 👈 NEW GUI CASE
+                    System.out.println("Launching GUI...");
+                    SwingUtilities.invokeLater(() -> {
+                        JFrame frame = new JFrame("Gradebook GUI Test");
+                        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                        frame.setSize(600, 400);
+                        frame.add(new GradebookGUI());
+                        frame.setVisible(true);
+                    });
+                    break;
+
                 case "exit":
                     System.out.println("Exiting app. Goodbye!");
                     isRunning = false;
                     break;
 
                 default:
-                    System.out.println("Invalid command. Use: [register | login | exit]");
+                    System.out.println("Invalid command. Use: [register | login | gui | exit]");
             }
         }
 
@@ -73,8 +86,7 @@ public class Main {
 
     private static void startAutoSave() {
         Runnable dummySaveTask = () -> System.out.println("Auto-saving user session.");
-        autoSaveService = new AutoSaveService(dummySaveTask, 5000); 
-        // every 5 seconds
+        autoSaveService = new AutoSaveService(dummySaveTask, 5000); // every 5 seconds
         autoSaveService.start();
     }
 
@@ -97,8 +109,5 @@ public class Main {
                 System.out.println("Simulating: '" + input + "' command (no functionality yet)");
             }
         }
-    }
-}
-        scanner.close();
     }
 }
