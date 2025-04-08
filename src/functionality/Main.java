@@ -2,7 +2,7 @@ package functionality;
 
 import logic.SecurityManager;
 import logic.AutoSaveService;
-import ui.GradebookGUI; 
+import ui.GradeBookGui;
 import javax.swing.*;   
 
 import java.util.Scanner;
@@ -66,7 +66,7 @@ public class Main {
                         JFrame frame = new JFrame("Gradebook GUI Test");
                         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                         frame.setSize(600, 400);
-                        frame.add(new GradebookGUI());
+                        frame.add(new GradeBookGui());
                         frame.setVisible(true);
                     });
                     break;
