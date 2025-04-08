@@ -16,7 +16,7 @@ public class Main {
         securityManager = new SecurityManager();
 
         System.out.println("Welcome to the Project Simulator!");
-        System.out.println("Please choose from: [register | login | gui | exit]"); // 👈 Added 'gui'
+        System.out.println("Please choose from: [register | login | gui | exit]"); 
 
         boolean isRunning = true;
         boolean loggedIn = false;
