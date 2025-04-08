@@ -1,3 +1,4 @@
+package functionality;
 import logic.SecurityManager;
 import logic.AutoSaveService;
 
