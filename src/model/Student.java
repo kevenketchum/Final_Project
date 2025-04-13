@@ -27,4 +27,8 @@ public class Student extends User {
         }
         return sum / grades.size();
     }
+    
+    public String getName() {
+    	return this.username;
+    }
 }
