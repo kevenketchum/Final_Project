@@ -56,4 +56,7 @@ public class Assignment {
 		
 		return grade;
 	}
+	
+	public void dropAssignment() {
+		this.weight = 0.0;	}
 }
