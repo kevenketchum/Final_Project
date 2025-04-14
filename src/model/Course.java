@@ -2,18 +2,36 @@ package model;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 
 public class Course {
 	private ArrayList<Student> studentList;
 	private final String courseName;
 	private ArrayList<Assignment> assignments;
 	private boolean current;
+	//tracks the weights of the assignments
+	private HashMap<AssignmentType, Double> categoryWeights;
 	
 	public Course(String courseName) {
 		this.courseName = courseName;
 		current = true;
+		
+		//Default weight of assignments, must sum up to 1.0
+        categoryWeights.put(AssignmentType.QUIZ, 0.2);
+        categoryWeights.put(AssignmentType.ASSIGNMENT, 0.3);
+        categoryWeights.put(AssignmentType.TEST, 0.5);
 	}
-	
+	//work in progress, be able to change the weight of assignmnet type
+	//must check that new weight does not bring the total weight>1.0
+	/*
+	public void setWeight(String type, double weight) {
+		double prev;
+		if(type.equalsIgnoreCase("assignment")) {
+			prev =categoryWeights.replace(AssignmentType.ASSIGNMENT, weight);
+			
+		}
+	}
+	*/
 	public void addStudent(String student) {
 		studentList.add(new Student(student));
 	}
@@ -39,10 +57,30 @@ public class Course {
 	public void createAssignment(String name, String type) {
 		Assignment current = new Assignment(name, type, studentList);
 		assignments.add(current);
+		updateWeights();
 	}
 	
 	public void removeAssignment(String name) {
 		this.assignments.removeIf(Assignment -> Assignment.getAssignment().equalsIgnoreCase(name));
+	}
+	
+	
+	//Not sure if function works, make sure to test
+	//updates the weight of the assignments, called when new assignment made
+	private void updateWeights() {
+        // Count how many of each assignment there is
+        HashMap<AssignmentType, Integer> typeCounts = new HashMap<>();
+        for (Assignment a : assignments) {
+            typeCounts.put(a.getType(), typeCounts.getOrDefault(a.getType(), 0) + 1);
+        }
+
+        // Reassign weights based off total weight its supposed to have and divide it by
+        //total type of assignment
+        for (Assignment a : assignments) {
+            double typeWeight = categoryWeights.getOrDefault(a.getType(), 0.0);
+            int count = typeCounts.getOrDefault(a.getType(), 1);
+            a.setWeight(typeWeight / count);
+        }
 	}
 	
 	//Set the course as finished
