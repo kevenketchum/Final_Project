@@ -35,14 +35,25 @@ public class Teacher extends User {
     }
     
     //make groups given the name of a course and the size of the groups
-    public ArrayList<String> makeGroups(String courseName, int size){
+    //Return a string containing the groups?
+    public String makeGroups(String courseName, int size){
+    	ArrayList<ArrayList<Student>> groups = null;
     	for(Course c : courses) {
     		if(c.equals(courseName)) {
-    			return c.makeGroups(size);
+    			groups = c.makeGroups(size);
     		}
     	}
+    	String answer = null;
+    	for(int i = 1; i <= groups.size(); i++) {
+    		answer += "Group "+"i"+":\n";
+    		for(int j = 0; j < groups.get(i).size(); j++) {
+    			answer += groups.get(i).get(j);
+    			answer +=".\n";
+    		}
+    		answer+="\n";
+    	}
     	
-    	return null;
+    	return answer;
     }
     
     //Add or remove a student from a specific course, should the parameter be a string or Student obj?

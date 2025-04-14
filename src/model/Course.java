@@ -1,6 +1,7 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Course {
 	private ArrayList<Student> studentList;
@@ -59,7 +60,7 @@ public class Course {
 	
 	
 	//When function called check if grade != 0.0, if it is then it is ungraded
-	public double getGrade(String assignment, String name) {
+	public double getAssignmentGrade(String assignment, String name) {
 		double grade = 0;
 		for(Assignment a : assignments) {
 			if(a.getAssignment().equalsIgnoreCase(assignment)) {
@@ -71,8 +72,40 @@ public class Course {
 	
 	//make groups of the students using the given size, the groups is just a string containing multiple
 	//students names? maybe make a 2dArray
-	public ArrayList<String> makeGroups(int size){
+	public ArrayList<ArrayList<Student>> makeGroups(int size){
+		ArrayList<Student> copyStudentList = new ArrayList<>(studentList);
+		Collections.shuffle(copyStudentList);
+		ArrayList<ArrayList<Student>> groups = new ArrayList<>();
 		
+		for(int i = 0; i < copyStudentList.size(); i += size) {
+			int end = Math.min(i + size,  copyStudentList.size());
+			ArrayList<Student> group = new ArrayList<>(copyStudentList.subList(i, end));
+			groups.add(group);
+		}
+		return groups;
+		
+	}
+	
+	//Gets student grade by getting assg1Grade*weight + assg2Grade*weight...
+	//need to make sure that all of the assignments weight == 1.0
+	//make function to destribute weight on assignmnets?
+	public double getStudentGrade(String studentName) {
+		double answer = 0.0;
+		for(Assignment a : assignments) {
+			double assignmentGrade = a.getStudentGrade(studentName);
+			assignmentGrade *= a.getWeight();
+			answer += assignmentGrade;
+		}
+		return answer;
+	}
+	
+	//Get class average by getting all students grades and dividing it
+	public double getClassAverage() {
+		double answer = 0.0;
+		for(Student a : studentList) {
+			answer += getStudentGrade(a.getName());
+		}
+		return answer / studentList.size();
 	}
 	
 	public String getName() {
