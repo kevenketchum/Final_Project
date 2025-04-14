@@ -7,6 +7,9 @@ public class Assignment {
 	//Create enum to show if assignment, quiz, or exam?
 	private final String name;
 	private final HashMap<Student, Double> grades = new HashMap<Student, Double>();
+	//Weight of assignment needs to sum to 1.0 counting all assignmnets on course
+	//probably change to enum to show the assignment and then make function in course
+	//to destribute the weight into all assignments
 	private double weight;
 	
 	public Assignment(String name, String type, ArrayList<Student> students) {
@@ -44,6 +47,15 @@ public class Assignment {
 		}
 	}
 	
+	//Return the sum of all of the grades from all students
+	public double getAllGrades(){
+		double answer =0.0;
+		for(Double grade : grades.values()) {
+			answer += grade;
+		}
+		return answer;
+	}
+	
 	//get grade for assignment from student
 	//uses user's getUserName, change if this isn't just the name of the students
 	public double getStudentGrade(String studentName) {
@@ -55,6 +67,10 @@ public class Assignment {
 		}
 		
 		return grade;
+	}
+	
+	public double getWeight() {
+		return this.weight;
 	}
 	
 	public void dropAssignment() {
