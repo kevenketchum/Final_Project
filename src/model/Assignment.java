@@ -10,19 +10,21 @@ public class Assignment {
 	//Weight of assignment needs to sum to 1.0 counting all assignmnets on course
 	//probably change to enum to show the assignment and then make function in course
 	//to destribute the weight into all assignments
+	private AssignmentType type;
 	private double weight;
 	
 	public Assignment(String name, String type, ArrayList<Student> students) {
 		this.name = name;
 		//weight determines what kind of assignment it is, change weight on future
+		this.weight = 0.0;
 		if(type.equalsIgnoreCase("assignment")) {
-			weight = 10;
+			this.type = AssignmentType.ASSIGNMENT;
 		}
 		else if(type.equalsIgnoreCase("quiz")) {
-			weight = 20;
+			this.type = AssignmentType.QUIZ;
 		}
-		else if(type.equalsIgnoreCase("exam")) {
-			weight = 50;
+		else if(type.equalsIgnoreCase("test")) {
+			this.type =  AssignmentType.TEST;
 		}
 		else {
 			System.out.println("Invalid type of assignment.\n");
@@ -69,8 +71,16 @@ public class Assignment {
 		return grade;
 	}
 	
+	public void setWeight(double weight) {
+		this.weight = weight;
+	}
+	
 	public double getWeight() {
 		return this.weight;
+	}
+	
+	public AssignmentType getType() {
+		return this.type;
 	}
 	
 	public void dropAssignment() {
