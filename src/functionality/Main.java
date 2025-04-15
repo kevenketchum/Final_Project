@@ -60,7 +60,7 @@ public class Main {
                     }
                     break;
 
-                case "gui": // 👈 NEW GUI CASE
+                case "gui": 
                     System.out.println("Launching GUI...");
                     SwingUtilities.invokeLater(() -> {
                         JFrame frame = new JFrame("Gradebook GUI Test");
