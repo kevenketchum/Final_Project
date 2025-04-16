@@ -23,15 +23,35 @@ public class Course {
 	}
 	//work in progress, be able to change the weight of assignmnet type
 	//must check that new weight does not bring the total weight>1.0
-	/*
-	public void setWeight(String type, double weight) {
-		double prev;
-		if(type.equalsIgnoreCase("assignment")) {
-			prev =categoryWeights.replace(AssignmentType.ASSIGNMENT, weight);
-			
+	
+	public boolean setWeight(String type, double newWeight) {
+	    double totalWeight = newWeight;
+	    AssignmentType newType= null;
+	    if(type.equalsIgnoreCase("assignment")) {
+			newType = AssignmentType.ASSIGNMENT;
 		}
+		else if(type.equalsIgnoreCase("quiz")) {
+			newType = AssignmentType.QUIZ;
+		}
+		else if(type.equalsIgnoreCase("test")) {
+			newType =  AssignmentType.TEST;
+		}
+		else return false;
+	    
+	    for (AssignmentType key : categoryWeights.keySet()) {
+	        if (key != newType) {
+	            totalWeight += categoryWeights.get(key);
+	        }
+	    }
+	    // Check that total weight remains exactly 1.0
+	    if (Math.abs(totalWeight - 1.0) > 0.0001) {
+	        return false; 
+	    }
+	    categoryWeights.put(newType, newWeight);
+	    updateWeights();
+	    return true;
 	}
-	*/
+	
 	public void addStudent(String student) {
 		studentList.add(new Student(student));
 	}
@@ -146,6 +166,22 @@ public class Course {
 		return answer / studentList.size();
 	}
 	
+	//Gets median by getting all Student Grade and getting the middle value
+	public double getClassMedian(){
+		ArrayList<Double> grades = new ArrayList<>();
+		int numStudents = studentList.size();
+		for(Student a : studentList) {
+			grades.add(getStudentGrade(a.getName()));
+		}
+		Collections.sort(grades);
+		if(numStudents % 2 == 1) {
+			return grades.get((int)Math.ceil(numStudents / 2));
+		}
+		else {
+			int index = numStudents / 2;
+			return (grades.get(index) + grades.get(index + 1)) / 2;
+		}
+	}
 	public String getName() {
 		return this.courseName;
 	}
