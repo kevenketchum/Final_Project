@@ -2,9 +2,10 @@ package functionality;
 
 import logic.SecurityManager;
 import logic.AutoSaveService;
+import model.Gradebook;
 import ui.GradeBookGui;
-import javax.swing.*;   
 
+import javax.swing.*;
 import java.util.Scanner;
 
 public class Main {
@@ -14,9 +15,10 @@ public class Main {
 
     public static void main(String[] args) {
         securityManager = new SecurityManager();
+        Gradebook sharedGradebook = Gradebook.loadFromFile(); // Load shared persistent gradebook
 
         System.out.println("Welcome to the Project Simulator!");
-        System.out.println("Please choose from: [register | login | gui | exit]"); 
+        System.out.println("Please choose from: [register | login | gui | exit]");
 
         boolean isRunning = true;
         boolean loggedIn = false;
@@ -50,7 +52,7 @@ public class Main {
                         loggedIn = true;
                         currentUser = username;
                         System.out.println("Login successful. Welcome back, " + username + "!");
-                        startAutoSave();
+                        startAutoSave(sharedGradebook);
                         simulateSession();
                         stopAutoSave();
                         loggedIn = false;
@@ -60,13 +62,13 @@ public class Main {
                     }
                     break;
 
-                case "gui": 
+                case "gui":
                     System.out.println("Launching GUI...");
                     SwingUtilities.invokeLater(() -> {
-                        JFrame frame = new JFrame("Gradebook GUI Test");
+                        JFrame frame = new JFrame("Gradebook System");
                         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                         frame.setSize(600, 400);
-                        frame.add(new GradeBookGui());
+                        frame.add(new GradeBookGui(sharedGradebook)); // Pass the loaded gradebook
                         frame.setVisible(true);
                     });
                     break;
@@ -84,9 +86,12 @@ public class Main {
         scanner.close();
     }
 
-    private static void startAutoSave() {
-        Runnable dummySaveTask = () -> System.out.println("Auto-saving user session.");
-        autoSaveService = new AutoSaveService(dummySaveTask, 5000); // every 5 seconds
+    private static void startAutoSave(Gradebook gradebook) {
+        Runnable saveTask = () -> {
+            System.out.println("Auto-saving gradebook...");
+            gradebook.saveToFile();
+        };
+        autoSaveService = new AutoSaveService(saveTask, 5000); // every 5 seconds
         autoSaveService.start();
     }
 
@@ -111,5 +116,3 @@ public class Main {
         }
     }
 }
-
-
