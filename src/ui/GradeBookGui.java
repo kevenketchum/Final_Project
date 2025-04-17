@@ -13,10 +13,12 @@ public class GradeBookGui extends JPanel {
     private JPanel mainPanel;
     private SecurityManager securityManager;
     private User currentUser;
+    private Gradebook gradebook;
 
     public GradeBookGui() {
         setLayout(new BorderLayout());
         securityManager = new SecurityManager();
+        gradebook = Gradebook.loadFromFile(); // Load existing data if available
 
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
@@ -59,7 +61,7 @@ public class GradeBookGui extends JPanel {
                             break;
                         case "teacher":
                         case "admin":
-                            currentUser = new Teacher(username, new Gradebook());
+                            currentUser = new Teacher(username, gradebook);
                             TeacherPanel teacherPanel = new TeacherPanel((Teacher) currentUser);
                             mainPanel.add(teacherPanel, "teacher");
                             cardLayout.show(mainPanel, "teacher");
@@ -82,7 +84,7 @@ public class GradeBookGui extends JPanel {
             add(welcome, BorderLayout.NORTH);
 
             String[] columns = {"Assignment", "Grade"};
-            List<Double> grades = student.getGrades();
+            List<Double> grades = gradebook.getGrades(student.getUsername());
 
             String[][] data = new String[grades.size()][2];
             for (int i = 0; i < grades.size(); i++) {
@@ -93,7 +95,7 @@ public class GradeBookGui extends JPanel {
             JTable gradeTable = new JTable(data, columns);
             add(new JScrollPane(gradeTable), BorderLayout.CENTER);
 
-            JLabel average = new JLabel("Average: " + String.format("%.2f", student.getAverageGrade()));
+            JLabel average = new JLabel("Average: " + String.format("%.2f", gradebook.getAverage(student.getUsername())));
             add(average, BorderLayout.SOUTH);
         }
     }
@@ -115,10 +117,28 @@ public class GradeBookGui extends JPanel {
             if (teacher.getRole().equals("admin")) {
                 JButton adminAddStudent = new JButton("Admin: Add Student");
                 buttonPanel.add(adminAddStudent);
-                // adminAddStudent.addActionListener(...); // Add actual admin logic here
+                // Add listener to store students persistently later
             }
 
             add(buttonPanel, BorderLayout.SOUTH);
+
+            addStudentBtn.addActionListener(e -> {
+                String student = JOptionPane.showInputDialog("Enter student username:");
+                gradebook.addGrade(student, 0.0); // Adds a placeholder grade
+                gradebook.saveToFile();
+            });
+
+            assignGradeBtn.addActionListener(e -> {
+                String student = JOptionPane.showInputDialog("Enter student username:");
+                String gradeStr = JOptionPane.showInputDialog("Enter grade to assign:");
+                try {
+                    double grade = Double.parseDouble(gradeStr);
+                    gradebook.addGrade(student, grade);
+                    gradebook.saveToFile();
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(this, "Invalid grade format");
+                }
+            });
         }
     }
 }
