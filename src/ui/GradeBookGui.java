@@ -7,6 +7,7 @@ import java.awt.event.*;
 import logic.SecurityManager;
 import model.*;
 import java.util.List;
+import java.util.ArrayList;
 
 public class GradeBookGui extends JPanel {
     private CardLayout cardLayout;
@@ -15,10 +16,14 @@ public class GradeBookGui extends JPanel {
     private User currentUser;
     private Gradebook gradebook;
 
-    public GradeBookGui() {
+    public GradeBookGui(Gradebook gradebook) {
+        this.gradebook = gradebook;
+        initializeGui();
+    }
+
+    private void initializeGui() {
         setLayout(new BorderLayout());
         securityManager = new SecurityManager();
-        gradebook = Gradebook.loadFromFile(); // Load existing data if available
 
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
@@ -28,15 +33,15 @@ public class GradeBookGui extends JPanel {
         cardLayout.show(mainPanel, "login");
     }
 
-    /** Login Panel allowing role selection */
     private class LoginPanel extends JPanel {
         public LoginPanel() {
-            setLayout(new GridLayout(7, 1));
+            setLayout(new GridLayout(8, 1));
 
             JTextField usernameField = new JTextField();
             JPasswordField passwordField = new JPasswordField();
             JComboBox<String> roleDropdown = new JComboBox<>(new String[]{"student", "teacher", "admin"});
             JButton loginButton = new JButton("Login");
+            JButton registerButton = new JButton("Register");
 
             add(new JLabel("Username:"));
             add(usernameField);
@@ -45,6 +50,7 @@ public class GradeBookGui extends JPanel {
             add(new JLabel("Select Role:"));
             add(roleDropdown);
             add(loginButton);
+            add(registerButton);
 
             loginButton.addActionListener(e -> {
                 String username = usernameField.getText().trim();
@@ -60,10 +66,15 @@ public class GradeBookGui extends JPanel {
                             cardLayout.show(mainPanel, "student");
                             break;
                         case "teacher":
-                        case "admin":
                             currentUser = new Teacher(username, gradebook);
                             TeacherPanel teacherPanel = new TeacherPanel((Teacher) currentUser);
                             mainPanel.add(teacherPanel, "teacher");
+                            cardLayout.show(mainPanel, "teacher");
+                            break;
+                        case "admin":
+                            currentUser = new Admin(username, gradebook);
+                            TeacherPanel adminPanel = new TeacherPanel((Teacher) currentUser);
+                            mainPanel.add(adminPanel, "teacher");
                             cardLayout.show(mainPanel, "teacher");
                             break;
                         default:
@@ -73,10 +84,27 @@ public class GradeBookGui extends JPanel {
                     JOptionPane.showMessageDialog(this, "Login failed. Check your credentials.");
                 }
             });
+
+            registerButton.addActionListener(e -> {
+                String username = usernameField.getText().trim();
+                String password = new String(passwordField.getPassword()).trim();
+                String role = (String) roleDropdown.getSelectedItem();
+
+                if (username.isEmpty() || password.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Please enter both username and password.");
+                    return;
+                }
+
+                boolean registered = securityManager.registerUser(username, password);
+                if (registered) {
+                    JOptionPane.showMessageDialog(this, "Registration successful! You can now log in as a " + role + ".");
+                } else {
+                    JOptionPane.showMessageDialog(this, "Username already exists. Please choose another.");
+                }
+            });
         }
     }
 
-    /** Student Panel */
     private class StudentPanel extends JPanel {
         public StudentPanel(Student student) {
             setLayout(new BorderLayout());
@@ -100,7 +128,6 @@ public class GradeBookGui extends JPanel {
         }
     }
 
-    /** Teacher/Admin Panel */
     private class TeacherPanel extends JPanel {
         public TeacherPanel(Teacher teacher) {
             setLayout(new BorderLayout());
@@ -109,24 +136,26 @@ public class GradeBookGui extends JPanel {
 
             JPanel buttonPanel = new JPanel();
 
-            JButton addStudentBtn = new JButton("Add Student to Course");
+            JButton viewGradebookBtn = new JButton("View Full Gradebook");
             JButton assignGradeBtn = new JButton("Assign Grade to Student");
-            buttonPanel.add(addStudentBtn);
-            buttonPanel.add(assignGradeBtn);
+            JButton createAssignmentBtn = new JButton("Create Assignment");
 
-            if (teacher.getRole().equals("admin")) {
-                JButton adminAddStudent = new JButton("Admin: Add Student");
+            buttonPanel.add(viewGradebookBtn);
+            buttonPanel.add(assignGradeBtn);
+            buttonPanel.add(createAssignmentBtn);
+
+            if (teacher instanceof Admin) {
+                JButton adminAddStudent = new JButton("Add Student to Course");
                 buttonPanel.add(adminAddStudent);
-                // Add listener to store students persistently later
+
+                adminAddStudent.addActionListener(e -> {
+                    String student = JOptionPane.showInputDialog("Enter student username:");
+                    gradebook.addGrade(student, 0.0);
+                    gradebook.saveToFile();
+                });
             }
 
             add(buttonPanel, BorderLayout.SOUTH);
-
-            addStudentBtn.addActionListener(e -> {
-                String student = JOptionPane.showInputDialog("Enter student username:");
-                gradebook.addGrade(student, 0.0); // Adds a placeholder grade
-                gradebook.saveToFile();
-            });
 
             assignGradeBtn.addActionListener(e -> {
                 String student = JOptionPane.showInputDialog("Enter student username:");
@@ -139,6 +168,41 @@ public class GradeBookGui extends JPanel {
                     JOptionPane.showMessageDialog(this, "Invalid grade format");
                 }
             });
+
+            createAssignmentBtn.addActionListener(e -> {
+                String courseName = JOptionPane.showInputDialog("Enter course name:");
+                String assignmentName = JOptionPane.showInputDialog("Enter assignment name:");
+                String type = JOptionPane.showInputDialog("Enter assignment type (assignment, quiz, test):");
+
+                Course course = new Course(courseName);
+                course.createAssignment(assignmentName, type);
+                JOptionPane.showMessageDialog(this, "Assignment '" + assignmentName + "' of type '" + type + "' created for course " + courseName);
+            });
+
+            viewGradebookBtn.addActionListener(e -> {
+                StringBuilder sb = new StringBuilder();
+                sb.append("Gradebook:\n");
+                for (String student : getAllStudentNames()) {
+                    sb.append(student).append(" → Grades: ").append(gradebook.getGrades(student)).append("\n");
+                }
+                JOptionPane.showMessageDialog(this, sb.toString());
+            });
+        }
+
+        private List<String> getAllStudentNames() {
+            // Temporary method to simulate student list — replace with real source if needed
+            List<String> all = new ArrayList<>();
+            all.add("student1");
+            all.add("student2");
+            all.add("student3");
+            return all;
+        }
+    }
+
+    public static class Admin extends Teacher {
+        public Admin(String username, Gradebook gradebook) {
+            super(username, gradebook);
+            this.role = "admin";
         }
     }
 }
