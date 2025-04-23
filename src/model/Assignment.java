@@ -70,6 +70,27 @@ public class Assignment {
 		
 		return grade;
 	}
+	//Returns the string representation of the assignment on one specific student
+	public String toString(Student current) {
+		String answer ="Assignment "+this.name+", ";
+		if(this.type.equals(AssignmentType.ASSIGNMENT)) {
+			answer +="assignment: ";
+		}
+		else if(this.type.equals(AssignmentType.QUIZ)) {
+			answer+="quiz: " ;
+		}
+		else if(this.type.equals(AssignmentType.TEST)){
+			answer+="test: ";
+		}
+		if(this.weight == 0.0) {
+			answer+="Dropped";
+		}
+		else {
+			answer+= grades.get(current);
+		}
+		answer+=".\n";
+		return answer;
+	}
 	
 	public void setWeight(double weight) {
 		this.weight = weight;
