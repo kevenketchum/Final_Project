@@ -1,109 +1,208 @@
+
 package ui;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import logic.SecurityManager;
+import model.*;
+import java.util.List;
+import java.util.ArrayList;
 
-/**
- * This class is the main Gradebook GUI panel that contains views for both student and teacher users.
- * It uses CardLayout to switch between login, student, and teacher panels within a single window.
- */
 public class GradeBookGui extends JPanel {
     private CardLayout cardLayout;
     private JPanel mainPanel;
+    private SecurityManager securityManager;
+    private User currentUser;
+    private Gradebook gradebook;
 
-    public GradeBookGui() {
+    public GradeBookGui(Gradebook gradebook) {
+        this.gradebook = gradebook;
+        initializeGui();
+    }
+
+    private void initializeGui() {
         setLayout(new BorderLayout());
+        securityManager = new SecurityManager();
 
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
 
-        LoginPanel loginPanel = new LoginPanel();
-        StudentPanel studentPanel = new StudentPanel();
-        TeacherPanel teacherPanel = new TeacherPanel();
-
-        mainPanel.add(loginPanel, "login");
-        mainPanel.add(studentPanel, "student");
-        mainPanel.add(teacherPanel, "teacher");
-
+        mainPanel.add(new LoginPanel(), "login");
         add(mainPanel, BorderLayout.CENTER);
+        cardLayout.show(mainPanel, "login");
     }
 
-    /**
-     * Panel for user login.
-     */
     private class LoginPanel extends JPanel {
         public LoginPanel() {
-            setLayout(new GridLayout(5, 1));
+            setLayout(new GridLayout(8, 1));
+
             JTextField usernameField = new JTextField();
             JPasswordField passwordField = new JPasswordField();
+            JComboBox<String> roleDropdown = new JComboBox<>(new String[]{"student", "teacher", "admin"});
             JButton loginButton = new JButton("Login");
+            JButton registerButton = new JButton("Register");
 
             add(new JLabel("Username:"));
             add(usernameField);
             add(new JLabel("Password:"));
             add(passwordField);
+            add(new JLabel("Select Role:"));
+            add(roleDropdown);
             add(loginButton);
+            add(registerButton);
 
             loginButton.addActionListener(e -> {
-                String username = usernameField.getText();
-                // TEMP LOGIC: hardcoded login detection
-                if (username.equalsIgnoreCase("teacher")) {
-                    cardLayout.show(mainPanel, "teacher");
+                String username = usernameField.getText().trim();
+                String password = new String(passwordField.getPassword()).trim();
+                String role = (String) roleDropdown.getSelectedItem();
+
+                if (securityManager.loginUser(username, password)) {
+                    switch (role.toLowerCase()) {
+                        case "student":
+                            currentUser = new Student(username);
+                            StudentPanel studentPanel = new StudentPanel((Student) currentUser);
+                            mainPanel.add(studentPanel, "student");
+                            cardLayout.show(mainPanel, "student");
+                            break;
+                        case "teacher":
+                            currentUser = new Teacher(username, gradebook);
+                            TeacherPanel teacherPanel = new TeacherPanel((Teacher) currentUser);
+                            mainPanel.add(teacherPanel, "teacher");
+                            cardLayout.show(mainPanel, "teacher");
+                            break;
+                        case "admin":
+                            currentUser = new Admin(username, gradebook);
+                            TeacherPanel adminPanel = new TeacherPanel((Teacher) currentUser);
+                            mainPanel.add(adminPanel, "teacher");
+                            cardLayout.show(mainPanel, "teacher");
+                            break;
+                        default:
+                            JOptionPane.showMessageDialog(this, "Invalid role selected.");
+                    }
                 } else {
-                    cardLayout.show(mainPanel, "student");
+                    JOptionPane.showMessageDialog(this, "Login failed. Check your credentials.");
+                }
+            });
+
+            registerButton.addActionListener(e -> {
+                String username = usernameField.getText().trim();
+                String password = new String(passwordField.getPassword()).trim();
+                String role = (String) roleDropdown.getSelectedItem();
+
+                if (username.isEmpty() || password.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Please enter both username and password.");
+                    return;
+                }
+
+                boolean registered = securityManager.registerUser(username, password);
+                if (registered) {
+                    JOptionPane.showMessageDialog(this, "Registration successful! You can now log in as a " + role + ".");
+                } else {
+                    JOptionPane.showMessageDialog(this, "Username already exists. Please choose another.");
                 }
             });
         }
     }
 
-    /**
-     * Panel for student view showing assignments and grades.
-     */
     private class StudentPanel extends JPanel {
-        public StudentPanel() {
+        public StudentPanel(Student student) {
             setLayout(new BorderLayout());
-            JLabel welcome = new JLabel("Welcome, Student");
+            JLabel welcome = new JLabel("Welcome, " + student.getUsername());
             add(welcome, BorderLayout.NORTH);
 
             String[] columns = {"Assignment", "Grade"};
-            String[][] data = {
-                {"Homework 1", "95"},
-                {"Quiz 1", "88"},
-                {"Midterm", "90"}
-            };
+            List<Double> grades = gradebook.getGrades(student.getUsername());
+
+            String[][] data = new String[grades.size()][2];
+            for (int i = 0; i < grades.size(); i++) {
+                data[i][0] = "Assignment " + (i + 1);
+                data[i][1] = String.valueOf(grades.get(i));
+            }
+
             JTable gradeTable = new JTable(data, columns);
             add(new JScrollPane(gradeTable), BorderLayout.CENTER);
 
-            JLabel overall = new JLabel("Overall Grade: 91% (A)");
-            add(overall, BorderLayout.SOUTH);
+            JLabel average = new JLabel("Average: " + String.format("%.2f", gradebook.getAverage(student.getUsername())));
+            add(average, BorderLayout.SOUTH);
         }
     }
 
-    /**
-     * Panel for teacher view showing all students and assignment tools.
-     */
     private class TeacherPanel extends JPanel {
-        public TeacherPanel() {
+        public TeacherPanel(Teacher teacher) {
             setLayout(new BorderLayout());
-            JLabel welcome = new JLabel("Welcome, Teacher");
+            JLabel welcome = new JLabel("Welcome, " + teacher.getUsername());
             add(welcome, BorderLayout.NORTH);
 
-            String[] columns = {"Student", "Assignment", "Grade"};
-            String[][] data = {
-                {"Alice", "Homework 1", "90"},
-                {"Bob", "Homework 1", "85"},
-                {"Charlie", "Homework 1", "92"}
-            };
-            JTable studentTable = new JTable(data, columns);
-            add(new JScrollPane(studentTable), BorderLayout.CENTER);
-
             JPanel buttonPanel = new JPanel();
-            buttonPanel.add(new JButton("Add Grade"));
-            buttonPanel.add(new JButton("Remove Grade"));
-            buttonPanel.add(new JButton("Assign Grade"));
+
+            JButton viewGradebookBtn = new JButton("View Full Gradebook");
+            JButton assignGradeBtn = new JButton("Assign Grade to Student");
+            JButton createAssignmentBtn = new JButton("Create Assignment");
+
+            buttonPanel.add(viewGradebookBtn);
+            buttonPanel.add(assignGradeBtn);
+            buttonPanel.add(createAssignmentBtn);
+
+            if (teacher instanceof Admin) {
+                JButton adminAddStudent = new JButton("Add Student to Course");
+                buttonPanel.add(adminAddStudent);
+
+                adminAddStudent.addActionListener(e -> {
+                    String student = JOptionPane.showInputDialog("Enter student username:");
+                    gradebook.addGrade(student, 0.0);
+                    gradebook.saveToFile();
+                });
+            }
 
             add(buttonPanel, BorderLayout.SOUTH);
+
+            assignGradeBtn.addActionListener(e -> {
+                String student = JOptionPane.showInputDialog("Enter student username:");
+                String gradeStr = JOptionPane.showInputDialog("Enter grade to assign:");
+                try {
+                    double grade = Double.parseDouble(gradeStr);
+                    gradebook.addGrade(student, grade);
+                    gradebook.saveToFile();
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(this, "Invalid grade format");
+                }
+            });
+
+            createAssignmentBtn.addActionListener(e -> {
+                String courseName = JOptionPane.showInputDialog("Enter course name:");
+                String assignmentName = JOptionPane.showInputDialog("Enter assignment name:");
+                String type = JOptionPane.showInputDialog("Enter assignment type (assignment, quiz, test):");
+
+                Course course = new Course(courseName);
+                course.createAssignment(assignmentName, type);
+                JOptionPane.showMessageDialog(this, "Assignment '" + assignmentName + "' of type '" + type + "' created for course " + courseName);
+            });
+
+            viewGradebookBtn.addActionListener(e -> {
+                StringBuilder sb = new StringBuilder();
+                sb.append("Gradebook:\n");
+                for (String student : getAllStudentNames()) {
+                    sb.append(student).append(" → Grades: ").append(gradebook.getGrades(student)).append("\n");
+                }
+                JOptionPane.showMessageDialog(this, sb.toString());
+            });
+        }
+
+        private List<String> getAllStudentNames() {
+            // Temporary method to simulate student list — replace with real source if needed
+            List<String> all = new ArrayList<>();
+            all.add("student1");
+            all.add("student2");
+            all.add("student3");
+            return all;
         }
     }
-} 
+
+    public static class Admin extends Teacher {
+        public Admin(String username, Gradebook gradebook) {
+            super(username, gradebook);
+            this.role = "admin";
+        }
+    }
+}

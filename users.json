@@ -1,0 +1,22 @@
+{
+    "jose1": {
+        "password": "gGW54LtjG32ZBg000rIBwMupcGuc29SEq2Y40SEzOhA=",
+        "salt": "WgLfKEQlsvZl4WByqsZzHw=="
+    },
+    "teacher": {
+        "password": "AEtxr/ezwK8RqMbKznrgkiJDyqZQz/2cet3xz1QoEU4=",
+        "salt": "0TPPNneW0GM8rGuhR7NTUg=="
+    },
+    "keven": {
+        "password": "FEYxxZLzNGloOeQTmptd5r/uicxxXksV0PI5lazDhuI=",
+        "salt": "A8g4Eu3Y5zhe91eEyYzCpQ=="
+    },
+    "jose": {
+        "password": "vxf5fAAWQvHdwupajsDdAKcRbnrJ7lJ/4AppV7EGDmw=",
+        "salt": "tMN4N9aLyCPVOdaqxPMWIw=="
+    },
+    "kevenketchum": {
+        "password": "jonO89LtVAuOgIzgHvYl525HuX3xtmd4QclpGolMPOs=",
+        "salt": "+QAnlLP1Lm+lMdH7Mi051w=="
+    }
+}
