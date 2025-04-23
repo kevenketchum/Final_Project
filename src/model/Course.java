@@ -115,7 +115,23 @@ public class Course {
 			}
 		}
 	}
-	
+	//Returns a list of the assignmnets and grade of a specific student
+	public String getStudentAssignment(String student) {
+		String answer="";
+		int index = 0;
+		for(int i = 0; i < studentList.size(); i++) {
+			if(studentList.get(i).getName().equals(student)) {
+				index = i;
+				break;
+			}
+		}
+		for(Assignment a : assignments) {
+			answer += a.toString(studentList.get(index));
+			answer+="\n";
+		}
+		
+		return answer;
+	}
 	
 	//When function called check if grade != 0.0, if it is then it is ungraded
 	public double getAssignmentGrade(String assignment, String name) {
@@ -142,6 +158,31 @@ public class Course {
 		}
 		return groups;
 		
+	}
+	
+	public String getStudentFinalGrade(String studentName) {
+		if(current) {
+			return "Class is currently ongoing.\n";
+		}
+		else {
+			double grade = getStudentGrade(studentName);
+			if(grade<=100 & grade >=90) {
+				return "A";
+			}
+			else if(grade <= 89 && grade >=80) {
+				return "B";
+			}
+			else if(grade <= 79 && grade >= 70) {
+				return "C";
+			}
+			else if(grade <= 69 && grade >=30) {
+				return "D";
+			}
+			else if(grade <= 29 && grade >=0) {
+				return "F";
+			}
+		}
+		return "Error encountered";
 	}
 	
 	//Gets student grade by getting assg1Grade*weight + assg2Grade*weight...
