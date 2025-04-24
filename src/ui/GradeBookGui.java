@@ -119,31 +119,34 @@ public class GradeBookGui extends JPanel {
             double weightedTotal = 0.0;
             int courseCount = 0;
 
-            for (Course c : enrolledCourses) {
-                if (c.isCourseOngoing()) {
-                    List<Assignment> assignments = c.getAssignments();
+            for (String courseName : gradebook.getAllCourseNames()) {
+                Course course = gradebook.getCourse(courseName);
+                if (course != null && course.isCourseOngoing()) {
+                    List<Assignment> assignments = course.getAssignments();
                     String[][] data = new String[assignments.size()][2];
+
                     for (int i = 0; i < assignments.size(); i++) {
                         Assignment a = assignments.get(i);
                         data[i][0] = a.getAssignment();
                         data[i][1] = String.valueOf(a.getStudentGrade(student.getUsername()));
                     }
+
                     String[] columns = {"Assignment", "Grade"};
                     JTable gradeTable = new JTable(data, columns) {
                         public boolean isCellEditable(int row, int column) {
                             return false;
                         }
                     };
-                    coursePanel.add(new JLabel("Course: " + c.getName()));
+
+                    coursePanel.add(new JLabel("Course: " + course.getName()));
                     coursePanel.add(new JScrollPane(gradeTable));
-                    weightedTotal += c.getStudentGrade(student.getUsername());
+                    weightedTotal += course.getStudentGrade(student.getUsername());
                     courseCount++;
                 }
             }
 
             double weightedAverage = courseCount == 0 ? 0.0 : weightedTotal / courseCount;
             JLabel average = new JLabel("Weighted Average: " + String.format("%.2f", weightedAverage));
-
             add(coursePanel, BorderLayout.CENTER);
             add(average, BorderLayout.SOUTH);
 
@@ -186,6 +189,7 @@ public class GradeBookGui extends JPanel {
                     if (course != null) {
                         course.setGrade(assignmentName, student, grade);
                         gradebook.saveToFile();
+                        JOptionPane.showMessageDialog(this, "Grade saved successfully.");
                     } else {
                         JOptionPane.showMessageDialog(this, "Course not found.");
                     }
@@ -210,26 +214,24 @@ public class GradeBookGui extends JPanel {
             });
 
             viewGradebookBtn.addActionListener(e -> {
-                StringBuilder sb = new StringBuilder();
-                sb.append("Gradebook:\n");
-                for (String student : getAllStudentNames()) {
-                    sb.append(student).append(" → Grades: ").append(gradebook.getGrades(student)).append("\n");
+                StringBuilder sb = new StringBuilder("Gradebook:\n");
+                for (String courseName : gradebook.getAllCourseNames()) {
+                    Course course = gradebook.getCourse(courseName);
+                    sb.append("Course: ").append(courseName).append("\n");
+                    for (String student : gradebook.getAllUsernames()) {
+                        User u = gradebook.getUser(student);
+                        if (u instanceof Student) {
+                            sb.append("  Student: ").append(student).append("\n");
+                            for (var entry : course.getGrades(student).entrySet()) {
+                                sb.append("    ").append(entry.getKey()).append(" → ").append(entry.getValue()).append("\n");
+                            }
+                        }
+                    }
                 }
                 JOptionPane.showMessageDialog(this, sb.toString());
             });
 
             backButton.addActionListener(e -> cardLayout.show(mainPanel, "login"));
-        }
-
-        private List<String> getAllStudentNames() {
-            List<String> students = new ArrayList<>();
-            for (String username : gradebook.getAllUsernames()) {
-                User user = gradebook.getUser(username);
-                if (user instanceof Student) {
-                    students.add(user.getUsername());
-                }
-            }
-            return students;
         }
     }
 

@@ -1,18 +1,42 @@
 {
+    "teacher": {
+        "password": "munVtW7Tvas3BK1IwcB/lnNMCPfntwa+b1tucWv6ZdM=",
+        "salt": "qytZIYa/wyosDYTNiz8s7Q=="
+    },
     "poop": {
-        "password": "3A/AeMnwqupm+S02kNGjMGMKnZKb1eN2gQvzzAUF0Wc=",
-        "salt": "NKeBWyslX471uWcnQl+PmA=="
+        "password": "jqBN52cJ7550LD8u2KZaF6wTt2Uo6le/JupBVTc/+/I=",
+        "salt": "c9j/C/keGZSVpH+6NR3T7g=="
+    },
+    "student": {
+        "password": "JQpHp1dEyCoxjHaQejQqLnv1Gi/3ivxJO2x0Wa7nv0o=",
+        "salt": "jNg7JNth75FCqXC1/kXn1A=="
     },
     "keven": {
-        "password": "vNVfeGSJocD7gRyyUA9+Rm1VZTCOLh612/GATZPFzUI=",
-        "salt": "4mSfSIEaHPQozssN66madg=="
+        "password": "AiKZYBKdbWenfwAVJUUG39wNfcwzORhrC0zkldlO4yU=",
+        "salt": "cSHhCNV5N1ZwW4djBd+HLA=="
+    },
+    "jose": {
+        "password": "DfzWKmT3M7bqms7I4YKE8FkbYaU1tOpIMT6NkX2rQ4c=",
+        "salt": "WL12gYf7f9DROyf/UPy6qg=="
+    },
+    "student1": {
+        "password": "WhfQWxHZIf0B/QuiLdxbxn+T4xcFBdiY8VT1ELKtaDA=",
+        "salt": "ANuzumz6x2AqhHRTmsKcHA=="
+    },
+    "teacher1": {
+        "password": "VOgUIgvDdmDRMeRkYj2ncULEsx+DV+/ayrbi0KnTlJM=",
+        "salt": "lfDhO8fH3zMIdd7EN0V9NA=="
+    },
+    "admin1": {
+        "password": "J4T5NvVwpIg6Z0IJjj3K75mszz9Vjw8ZdXAbIq9jHJo=",
+        "salt": "8Hnaya+TorlzflDPEUFVDA=="
+    },
+    "admin": {
+        "password": "LyddLgQjzqAbrCEwkasFzJFjgct4ZXzhXmWEvT6aEt8=",
+        "salt": "j4sQLEoaJ5mZzLoQ63K0/w=="
     },
     "glenn": {
-        "password": "cO+IR/E2SBgwkahGWTUY8Qun4queG0wRC0w+yOr5xXY=",
-        "salt": "G/Rv3CkTaT1E65/QLD9mWg=="
-    },
-    "andy": {
-        "password": "jFZ+ZWasc5iCZArRnulslcCNHDQaRiM/+zSEGKZFffY=",
-        "salt": "tyzhq3dRI6KU+dQ29xqyEA=="
+        "password": "TfGyjP6e9nnew7uEMMHxZcmULWHpcU6nrKx5krp8JJA=",
+        "salt": "HF+Oheyb7igsPP8Xejsiag=="
     }
 }

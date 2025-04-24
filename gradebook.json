@@ -1,4 +1,17 @@
-{"keven": [
-    100,
-    50
-]}
+{
+    "courses": {"History": {"assignments": [
+        {
+            "name": "homework",
+            "weight": 0.15,
+            "grades": {"student": 85},
+            "type": "ASSIGNMENT"
+        },
+        {
+            "name": "homework",
+            "weight": 0.15,
+            "grades": {"student": 85},
+            "type": "ASSIGNMENT"
+        }
+    ]}},
+    "studentGrades": {}
+}

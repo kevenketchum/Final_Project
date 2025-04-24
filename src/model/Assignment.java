@@ -106,4 +106,9 @@ public class Assignment {
 	
 	public void dropAssignment() {
 		this.weight = 0.0;	}
+	
+	public HashMap<Student, Double> getGrades() {
+	    return grades;
+	}
+
 }
