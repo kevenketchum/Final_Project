@@ -105,6 +105,18 @@ public class Course {
         }
     }
 
+    public ArrayList<Student> sortByName(){
+		ArrayList<Student> answer = new ArrayList<Student>(studentList);
+		answer.sort(new FirstNameComparator());
+		return answer;
+	}
+	
+	public ArrayList<Student> sortByGrade(){
+		ArrayList<Student> answer = new ArrayList<Student>(studentList);
+		answer.sort(new GradeComparator(this.courseName));
+		return answer;
+	}
+
     public String getStudentAssignment(String student) {
         StringBuilder answer = new StringBuilder();
         int index = 0;
