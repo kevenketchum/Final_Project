@@ -1,4 +1,3 @@
-
 package ui;
 
 import javax.swing.*;
@@ -148,10 +147,20 @@ public class GradeBookGui extends JPanel {
                 JButton adminAddStudent = new JButton("Add Student to Course");
                 buttonPanel.add(adminAddStudent);
 
+                // 🔧 FIXED SECTION: Real add-to-course logic
                 adminAddStudent.addActionListener(e -> {
                     String student = JOptionPane.showInputDialog("Enter student username:");
-                    gradebook.addGrade(student, 0.0);
-                    gradebook.saveToFile();
+                    String courseName = JOptionPane.showInputDialog("Enter course name to enroll the student:");
+
+                    if (student != null && courseName != null) {
+                        boolean success = gradebook.addStudentToCourse(student, courseName);
+                        if (success) {
+                            JOptionPane.showMessageDialog(this, "Student '" + student + "' added to course '" + courseName + "'.");
+                            gradebook.saveToFile();
+                        } else {
+                            JOptionPane.showMessageDialog(this, "Failed to add student. Check if course or student exists.");
+                        }
+                    }
                 });
             }
 
@@ -190,7 +199,6 @@ public class GradeBookGui extends JPanel {
         }
 
         private List<String> getAllStudentNames() {
-            // Temporary method to simulate student list — replace with real source if needed
             List<String> all = new ArrayList<>();
             all.add("student1");
             all.add("student2");
