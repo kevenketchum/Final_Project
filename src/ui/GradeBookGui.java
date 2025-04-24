@@ -4,9 +4,9 @@ import javax.swing.*;
 import java.awt.*;
 import logic.SecurityManager;
 import model.*;
+import java.util.*;
 import java.util.List;
-import java.util.ArrayList;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 public class GradeBookGui extends JPanel {
     private CardLayout cardLayout;
@@ -112,7 +112,6 @@ public class GradeBookGui extends JPanel {
             JLabel welcome = new JLabel("Welcome, " + student.getUsername());
             add(welcome, BorderLayout.NORTH);
 
-            List<Course> enrolledCourses = student.getCourseList();
             JPanel coursePanel = new JPanel();
             coursePanel.setLayout(new BoxLayout(coursePanel, BoxLayout.Y_AXIS));
 
@@ -147,12 +146,14 @@ public class GradeBookGui extends JPanel {
 
             double weightedAverage = courseCount == 0 ? 0.0 : weightedTotal / courseCount;
             JLabel average = new JLabel("Weighted Average: " + String.format("%.2f", weightedAverage));
+            JLabel gpa = new JLabel("GPA: " + String.format("%.2f", gradebook.getAverage(student.getUsername())));
             add(coursePanel, BorderLayout.CENTER);
             add(average, BorderLayout.SOUTH);
+            add(gpa, BorderLayout.EAST);
 
             JButton backButton = new JButton("Back to Login");
             backButton.addActionListener(e -> cardLayout.show(mainPanel, "login"));
-            add(backButton, BorderLayout.NORTH);
+            add(backButton, BorderLayout.WEST);
         }
     }
 
@@ -169,11 +170,23 @@ public class GradeBookGui extends JPanel {
             JButton viewGradebookBtn = new JButton("View Full Gradebook");
             JButton assignGradeBtn = new JButton("Assign Grade to Student");
             JButton createAssignmentBtn = new JButton("Create Assignment");
+            JButton dropAssignmentBtn = new JButton("Drop Assignment");
+            JButton removeAssignmentBtn = new JButton("Remove Assignment");
+            JButton sortByNameBtn = new JButton("Sort by Name");
+            JButton sortByGradeBtn = new JButton("Sort by Grade");
+            JButton changeWeightBtn = new JButton("Change Assignment Weight");
+            JButton createGroupBtn = new JButton("Create Student Groups");
             JButton backButton = new JButton("Back to Login");
 
             buttonPanel.add(viewGradebookBtn);
             buttonPanel.add(assignGradeBtn);
             buttonPanel.add(createAssignmentBtn);
+            buttonPanel.add(dropAssignmentBtn);
+            buttonPanel.add(removeAssignmentBtn);
+            buttonPanel.add(sortByNameBtn);
+            buttonPanel.add(sortByGradeBtn);
+            buttonPanel.add(changeWeightBtn);
+            buttonPanel.add(createGroupBtn);
             buttonPanel.add(backButton);
 
             add(buttonPanel, BorderLayout.CENTER);
@@ -202,7 +215,6 @@ public class GradeBookGui extends JPanel {
                 String courseName = JOptionPane.showInputDialog("Enter course name:");
                 String assignmentName = JOptionPane.showInputDialog("Enter assignment name:");
                 String type = JOptionPane.showInputDialog("Enter assignment type (assignment, quiz, test):");
-
                 Course course = gradebook.getCourse(courseName);
                 if (course == null) {
                     course = new Course(courseName);
@@ -210,7 +222,73 @@ public class GradeBookGui extends JPanel {
                     teacher.addCourse(course);
                 }
                 course.createAssignment(assignmentName, type);
-                JOptionPane.showMessageDialog(this, "Assignment '" + assignmentName + "' of type '" + type + "' created for course " + courseName);
+                JOptionPane.showMessageDialog(this, "Assignment created.");
+            });
+
+            dropAssignmentBtn.addActionListener(e -> {
+                String courseName = JOptionPane.showInputDialog("Enter course name:");
+                String assignmentName = JOptionPane.showInputDialog("Enter assignment name to drop:");
+                Course course = gradebook.getCourse(courseName);
+                if (course != null) {
+                    course.dropAssignment(assignmentName);
+                    JOptionPane.showMessageDialog(this, "Assignment dropped.");
+                }
+            });
+
+            removeAssignmentBtn.addActionListener(e -> {
+                String courseName = JOptionPane.showInputDialog("Enter course name:");
+                String assignmentName = JOptionPane.showInputDialog("Enter assignment name to remove:");
+                Course course = gradebook.getCourse(courseName);
+                if (course != null) {
+                    course.removeAssignment(assignmentName);
+                    JOptionPane.showMessageDialog(this, "Assignment removed.");
+                }
+            });
+
+            sortByNameBtn.addActionListener(e -> {
+                String courseName = JOptionPane.showInputDialog("Enter course name:");
+                Course course = gradebook.getCourse(courseName);
+                if (course != null) {
+                    course.getAssignments().sort(Comparator.comparing(Assignment::getAssignment));
+                    JOptionPane.showMessageDialog(this, "Assignments sorted by name.");
+                }
+            });
+
+            sortByGradeBtn.addActionListener(e -> {
+                String courseName = JOptionPane.showInputDialog("Enter course name:");
+                Course course = gradebook.getCourse(courseName);
+                if (course != null) {
+                    course.getAssignments().sort((a1, a2) -> Double.compare(a2.getAllGrades(), a1.getAllGrades()));
+                    JOptionPane.showMessageDialog(this, "Assignments sorted by grade sum.");
+                }
+            });
+
+            changeWeightBtn.addActionListener(e -> {
+                String courseName = JOptionPane.showInputDialog("Enter course name:");
+                String type = JOptionPane.showInputDialog("Enter assignment type to change weight:");
+                double newWeight = Double.parseDouble(JOptionPane.showInputDialog("Enter new weight:"));
+                Course course = gradebook.getCourse(courseName);
+                if (course != null) {
+                    boolean success = course.setWeight(type, newWeight);
+                    if (success) JOptionPane.showMessageDialog(this, "Weight updated.");
+                    else JOptionPane.showMessageDialog(this, "Failed to update weight (total != 1.0)");
+                }
+            });
+
+            createGroupBtn.addActionListener(e -> {
+                String courseName = JOptionPane.showInputDialog("Enter course name:");
+                int size = Integer.parseInt(JOptionPane.showInputDialog("Enter group size:"));
+                Course course = gradebook.getCourse(courseName);
+                if (course != null) {
+                    List<ArrayList<Student>> groups = course.makeGroups(size);
+                    StringBuilder sb = new StringBuilder("Generated Groups:\n");
+                    int i = 1;
+                    for (List<Student> group : groups) {
+                        sb.append("Group ").append(i++).append(": ");
+                        sb.append(group.stream().map(Student::getUsername).collect(Collectors.joining(", "))).append("\n");
+                    }
+                    JOptionPane.showMessageDialog(this, sb.toString());
+                }
             });
 
             viewGradebookBtn.addActionListener(e -> {
@@ -243,32 +321,33 @@ public class GradeBookGui extends JPanel {
             add(welcome, BorderLayout.NORTH);
 
             JPanel buttonPanel = new JPanel();
-            JButton addStudentButton = new JButton("Add Student to Course");
+            JButton addStudentButton = new JButton("Add Student(s) to Course");
             JButton backButton = new JButton("Back to Login");
-
-            Set<String> courseNames = gradebook.getAllCourseNames();
-            String[] coursesArray = courseNames.toArray(new String[0]);
 
             buttonPanel.add(addStudentButton);
             buttonPanel.add(backButton);
             add(buttonPanel, BorderLayout.SOUTH);
 
             addStudentButton.addActionListener(e -> {
-                String student = JOptionPane.showInputDialog("Enter student username:");
-                if (coursesArray.length == 0) {
-                    JOptionPane.showMessageDialog(this, "No courses available. Teachers must create courses first.");
-                    return;
-                }
-                String courseName = (String) JOptionPane.showInputDialog(
-                        this, "Select course:", "Course", JOptionPane.QUESTION_MESSAGE, null, coursesArray, coursesArray[0]);
+                JTextArea studentInput = new JTextArea(5, 20);
+                JScrollPane scrollPane = new JScrollPane(studentInput);
+                String courseName = (String) JOptionPane.showInputDialog(this, "Enter course name:");
 
-                if (student != null && courseName != null) {
-                    boolean success = gradebook.addStudentToCourse(student, courseName);
-                    if (success) {
-                        JOptionPane.showMessageDialog(this, "Student '" + student + "' added to course '" + courseName + "'.");
+                int option = JOptionPane.showConfirmDialog(this, scrollPane, "Enter student usernames (one per line)", JOptionPane.OK_CANCEL_OPTION);
+                if (option == JOptionPane.OK_OPTION && courseName != null) {
+                    String[] usernames = studentInput.getText().split("\\n");
+                    Course course = gradebook.getCourse(courseName);
+                    if (course != null) {
+                        int added = 0;
+                        for (String user : usernames) {
+                            if (gradebook.addStudentToCourse(user.trim(), courseName)) {
+                                added++;
+                            }
+                        }
+                        JOptionPane.showMessageDialog(this, added + " student(s) added to " + courseName);
                         gradebook.saveToFile();
                     } else {
-                        JOptionPane.showMessageDialog(this, "Failed to add student. Check if course or student exists.");
+                        JOptionPane.showMessageDialog(this, "Course not found.");
                     }
                 }
             });
