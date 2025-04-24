@@ -145,7 +145,7 @@ public class GradeBookGui extends JPanel {
             }
 
             double weightedAverage = courseCount == 0 ? 0.0 : weightedTotal / courseCount;
-            JLabel average = new JLabel("Weighted Average: " + String.format("%.2f", weightedAverage));
+            JLabel average = new JLabel("Course Average: " + String.format("%.2f", weightedAverage));
             JLabel gpa = new JLabel("GPA: " + String.format("%.2f", gradebook.getAverage(student.getUsername())));
             add(coursePanel, BorderLayout.CENTER);
             add(average, BorderLayout.SOUTH);
@@ -176,6 +176,9 @@ public class GradeBookGui extends JPanel {
             JButton sortByGradeBtn = new JButton("Sort by Grade");
             JButton changeWeightBtn = new JButton("Change Assignment Weight");
             JButton createGroupBtn = new JButton("Create Student Groups");
+            JButton classAverageBtn = new JButton("Calculate Class Average");
+            JButton classMedianBtn = new JButton("Calculate Class Median");
+            JButton assignFinalGradesBtn = new JButton("Assign Final Grades");
             JButton backButton = new JButton("Back to Login");
 
             buttonPanel.add(viewGradebookBtn);
@@ -187,6 +190,9 @@ public class GradeBookGui extends JPanel {
             buttonPanel.add(sortByGradeBtn);
             buttonPanel.add(changeWeightBtn);
             buttonPanel.add(createGroupBtn);
+            buttonPanel.add(classAverageBtn);
+            buttonPanel.add(classMedianBtn);
+            buttonPanel.add(assignFinalGradesBtn);
             buttonPanel.add(backButton);
 
             add(buttonPanel, BorderLayout.CENTER);
@@ -291,6 +297,50 @@ public class GradeBookGui extends JPanel {
                 }
             });
 
+            classAverageBtn.addActionListener(e -> {
+                String courseName = JOptionPane.showInputDialog(this, "Enter course name:");
+                Course course = gradebook.getCourse(courseName);
+                if (course != null) {
+                    double avg = course.getClassAverage();
+                    JOptionPane.showMessageDialog(this, "Class average for " + courseName + ": " + String.format("%.2f", avg));
+                } else {
+                    JOptionPane.showMessageDialog(this, "Course not found.");
+                }
+            });
+
+            classMedianBtn.addActionListener(e -> {
+                String courseName = JOptionPane.showInputDialog(this, "Enter course name:");
+                Course course = gradebook.getCourse(courseName);
+                if (course != null) {
+                    double median = course.getClassMedian();
+                    JOptionPane.showMessageDialog(this, "Class median for " + courseName + ": " + String.format("%.2f", median));
+                } else {
+                    JOptionPane.showMessageDialog(this, "Course not found.");
+                }
+            });
+
+            assignFinalGradesBtn.addActionListener(e -> {
+                String courseName = JOptionPane.showInputDialog(this, "Enter course name:");
+                Course course = gradebook.getCourse(courseName);
+                if (course != null) {
+                    course.endCourse();
+                    StringBuilder sb = new StringBuilder("Final Grades:\n");
+                    for (String student : gradebook.getAllUsernames()) {
+                        User u = gradebook.getUser(student);
+                        if (u instanceof Student) {
+                            sb.append("  Student: ").append(student).append(" → ").append(course.getStudentFinalGrade(student)).append("\n");
+                        }
+                    }
+                    JTextArea finalGradesArea = new JTextArea(sb.toString());
+                    finalGradesArea.setEditable(false);
+                    JScrollPane scrollPane = new JScrollPane(finalGradesArea);
+                    scrollPane.setPreferredSize(new Dimension(500, 300));
+                    JOptionPane.showMessageDialog(this, scrollPane, "Final Grades for " + courseName, JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Course not found.");
+                }
+            });
+
             viewGradebookBtn.addActionListener(e -> {
                 StringBuilder sb = new StringBuilder("Gradebook:\n");
                 for (String courseName : gradebook.getAllCourseNames()) {
@@ -306,7 +356,11 @@ public class GradeBookGui extends JPanel {
                         }
                     }
                 }
-                JOptionPane.showMessageDialog(this, sb.toString());
+                JTextArea gradebookView = new JTextArea(sb.toString());
+                gradebookView.setEditable(false);
+                JScrollPane scrollPane = new JScrollPane(gradebookView);
+                scrollPane.setPreferredSize(new Dimension(600, 400));
+                JOptionPane.showMessageDialog(this, scrollPane, "Gradebook View", JOptionPane.INFORMATION_MESSAGE);
             });
 
             backButton.addActionListener(e -> cardLayout.show(mainPanel, "login"));
@@ -322,9 +376,11 @@ public class GradeBookGui extends JPanel {
 
             JPanel buttonPanel = new JPanel();
             JButton addStudentButton = new JButton("Add Student(s) to Course");
+            JButton removeStudentButton = new JButton("Remove Student from Course");
             JButton backButton = new JButton("Back to Login");
 
             buttonPanel.add(addStudentButton);
+            buttonPanel.add(removeStudentButton);
             buttonPanel.add(backButton);
             add(buttonPanel, BorderLayout.SOUTH);
 
@@ -352,10 +408,25 @@ public class GradeBookGui extends JPanel {
                 }
             });
 
+            removeStudentButton.addActionListener(e -> {
+                String courseName = JOptionPane.showInputDialog(this, "Enter course name:");
+                String studentName = JOptionPane.showInputDialog(this, "Enter student username to remove:");
+                if (courseName != null && studentName != null) {
+                    Course course = gradebook.getCourse(courseName);
+                    if (course != null) {
+                        course.removeStudent(studentName);
+                        JOptionPane.showMessageDialog(this, "Student '" + studentName + "' removed from course '" + courseName + "'.");
+                        gradebook.saveToFile();
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Course not found.");
+                    }
+                }
+            });
+
             backButton.addActionListener(e -> cardLayout.show(mainPanel, "login"));
+            
         }
     }
-
     public static class Admin extends Teacher {
         public Admin(String username, Gradebook gradebook) {
             super(username, gradebook);

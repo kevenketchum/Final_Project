@@ -1,0 +1,34 @@
+{
+    "teacher": {
+        "password": "Ciu9S+MPMz1E39RFeN5WQvWBEOciRZuBAi12oItA4NA=",
+        "salt": "yI1I/QmB/aEnwNcTjKKAJQ=="
+    },
+    "student": {
+        "password": "jA+/oC8hvk80c/L2baZESo+c0lGov8WPcpEemVQuhXg=",
+        "salt": "dlW3/GLCccBHAuiNbLJt/A=="
+    },
+    "keven": {
+        "password": "hD2zUjRtKtQn3KXV6SUCE2sYMK36OJycWMMkdVkmj0Q=",
+        "salt": "bSnhfAVJE/ju+XEaMYm81g=="
+    },
+    "student2": {
+        "password": "RxQLEOAnlwsVYXklOC3r1vtmRU+zuHPd2zxU9v6j55Q=",
+        "salt": "4vK/MobirJHCGITkBgaOHg=="
+    },
+    "student1": {
+        "password": "WhIGXt5Mg+o41BAXYV0audIaAy8IcR05GMHMitm6vYs=",
+        "salt": "2ZGc9xkZViArJM2lafsryA=="
+    },
+    "admin": {
+        "password": "dT5HAjD9OJjTzMvU4hAXXQYDIf8x3dApJGR3c/cG5eE=",
+        "salt": "3ciosOoIA6D/OLNqyso7dw=="
+    },
+    "student3": {
+        "password": "4IjKBP0NbpNqa7NYSZRrM3A6CoyPsGZG9sSteif6H2U=",
+        "salt": "8JfnMMXqyFNk75SyuSi86w=="
+    },
+    "glenn": {
+        "password": "giGBJoz88TffEg0ZGVumj2gKcu/qJJnPf+CbMq6T1Tw=",
+        "salt": "ZBVUnXrEhxAlsd/zQGQ2Tw=="
+    }
+}
