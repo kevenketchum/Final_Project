@@ -10,6 +10,7 @@ public abstract class User {
     public User(String username, String role) {
         this.username = username;
         this.role = role;
+        this.courses = new ArrayList<>();
     }
 
     public String getUsername() {
@@ -24,26 +25,28 @@ public abstract class User {
     public String toString() {
         return role + ": " + username;
     }
-    
+
     public void addCourse(String courseName) {
-    	this.courses.add(new Course(courseName));
+        this.courses.add(new Course(courseName));
     }
-    
-    //Kind of shitty view all courses user has had, shows currently enrolled first then
-    //all donde courses, toString() already prints all students in course change maybe?
+
+    public void addCourse(Course course) {
+        this.courses.add(course);
+    }
+
     public String viewCourses() {
-    	String allCourses="courses currently enrolled:\n";
-    	for(Course c : courses) {
-    		if(c.isCourseOngoing()) {
-    			allCourses += c.getName()+".\n";
-    		}
-    	}
-    	allCourses += "Completed courses:\n";
-    	for(Course c : courses) {
-    		if(!c.isCourseOngoing()) {
-    			allCourses += c.getName()+".\n";
-    		}
-    	}
-    	return allCourses;
+        String allCourses = "courses currently enrolled:\n";
+        for (Course c : courses) {
+            if (c.isCourseOngoing()) {
+                allCourses += c.getName() + ".\n";
+            }
+        }
+        allCourses += "Completed courses:\n";
+        for (Course c : courses) {
+            if (!c.isCourseOngoing()) {
+                allCourses += c.getName() + ".\n";
+            }
+        }
+        return allCourses;
     }
 }

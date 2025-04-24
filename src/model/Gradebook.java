@@ -1,7 +1,6 @@
 package model;
 
 import org.json.*;
-
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -11,6 +10,8 @@ import java.util.*;
 public class Gradebook {
     private static final String FILE_PATH = "gradebook.json";
     private Map<String, List<Double>> studentGrades;
+    private Map<String, User> users = new HashMap<>();
+    private Map<String, Course> courses = new HashMap<>();
 
     public Gradebook() {
         this.studentGrades = new HashMap<>();
@@ -64,5 +65,38 @@ public class Gradebook {
         }
         return gradebook;
     }
-}
 
+    public Set<String> getAllUsernames() {
+        return users.keySet();
+    }
+
+    public User getUser(String username) {
+        return users.get(username);
+    }
+
+    public void registerUser(User user) {
+        users.put(user.getUsername(), user);
+    }
+
+    public void addCourse(Course course) {
+        courses.put(course.getName(), course);
+    }
+
+    public Course getCourse(String name) {
+        return courses.get(name);
+    }
+
+    public boolean addStudentToCourse(String username, String courseName) {
+        User user = getUser(username);
+        Course course = getCourse(courseName);
+        if (user instanceof Student && course != null) {
+            course.addStudent(username);
+            return true;
+        }
+        return false;
+    }
+
+    public Set<String> getAllCourseNames() {
+        return courses.keySet();
+    }
+}
