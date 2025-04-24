@@ -198,6 +198,16 @@ public class Course {
 		return answer;
 	}
 	
+	public double getStudentAverage(String studentName) {
+		double answer = 0.0;
+		for(Student a : studentList) {
+			if(a.getName().equals(studentName)) {
+				answer = getStudentGrade(a.getName());
+			}
+		}
+		return answer / assignments.size();
+	}
+	
 	//Get class average by getting all students grades and dividing it
 	public double getClassAverage() {
 		double answer = 0.0;
@@ -222,6 +232,25 @@ public class Course {
 			int index = numStudents / 2;
 			return (grades.get(index) + grades.get(index + 1)) / 2;
 		}
+	}
+	
+	public void dropAssignment(String assignmentName) {
+		for(Assignment a : assignments) {
+			if(a.getAssignment().equals(assignmentName)) {
+				a.dropAssignment();
+			}
+		}
+	}
+	
+	public String viewUngradedAssignments() {
+		String answer = "Ungraded assignments:\n";
+		for(Assignment a : assignments) {
+			if(a.getAllGrades() == 0.0) {
+				answer+= a.toString();
+				answer += "\n";
+			}
+		}
+		return answer;
 	}
 	public String getName() {
 		return this.courseName;
