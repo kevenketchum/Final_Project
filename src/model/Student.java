@@ -63,6 +63,9 @@ public class Student extends User {
                 gpa += 1;
             }
         }
+        if(gpa == 0.0) {
+        	return 0;
+        }
         return gpa / allGrades.size();
     }
 

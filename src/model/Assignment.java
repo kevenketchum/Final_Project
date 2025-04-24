@@ -70,6 +70,23 @@ public class Assignment {
 		
 		return grade;
 	}
+	
+	@Override
+	public String toString() {
+		String answer="";
+		if(this.type.equals(AssignmentType.ASSIGNMENT)) {
+			answer +="assignment: ";
+		}
+		else if(this.type.equals(AssignmentType.QUIZ)) {
+			answer+="quiz: " ;
+		}
+		else if(this.type.equals(AssignmentType.TEST)){
+			answer+="test: ";
+		}
+		answer +=this.name+".\n";
+		return answer;
+	}
+	
 	//Returns the string representation of the assignment on one specific student
 	public String toString(Student current) {
 		String answer ="Assignment "+this.name+", ";
@@ -105,5 +122,9 @@ public class Assignment {
 	}
 	
 	public void dropAssignment() {
-		this.weight = 0.0;	}
+		this.weight = 0.0;	
+		for(Student s : grades.keySet()) {
+			grades.replace(s, 0.0);
+		}
+	}
 }

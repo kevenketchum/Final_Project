@@ -20,9 +20,9 @@ public class Teacher extends User {
     			groups = c.makeGroups(size);
     		}
     	}
-    	String answer = null;
-    	for(int i = 1; i <= groups.size(); i++) {
-    		answer += "Group "+"i"+":\n";
+    	String answer = "";
+    	for(int i = 0; i < groups.size(); i++) {
+    		answer += "Group "+(i+1)+":\n";
     		for(int j = 0; j < groups.get(i).size(); j++) {
     			answer += groups.get(i).get(j);
     			answer +=".\n";
@@ -44,7 +44,7 @@ public class Teacher extends User {
     
     public boolean dropAssignmnet(String courseName, String assignmnetName) {
     	for(Course c : courses) {
-    		if(c.equals(assignmnetName)) {
+    		if(c.equals(courseName)) {
     			c.dropAssignment(assignmnetName);
     			return true;
     		}

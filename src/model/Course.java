@@ -240,7 +240,7 @@ public class Course {
 	}
 
 	public boolean equals(String name){
-		return this.courseName.equals(name);
+		return this.courseName.equalsIgnoreCase(name);
 	}
 
 	public ArrayList<Assignment> getAssignments() {
