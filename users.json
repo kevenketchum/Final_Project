@@ -1,22 +1,18 @@
 {
-    "jose1": {
-        "password": "gGW54LtjG32ZBg000rIBwMupcGuc29SEq2Y40SEzOhA=",
-        "salt": "WgLfKEQlsvZl4WByqsZzHw=="
-    },
-    "teacher": {
-        "password": "AEtxr/ezwK8RqMbKznrgkiJDyqZQz/2cet3xz1QoEU4=",
-        "salt": "0TPPNneW0GM8rGuhR7NTUg=="
+    "poop": {
+        "password": "3A/AeMnwqupm+S02kNGjMGMKnZKb1eN2gQvzzAUF0Wc=",
+        "salt": "NKeBWyslX471uWcnQl+PmA=="
     },
     "keven": {
-        "password": "FEYxxZLzNGloOeQTmptd5r/uicxxXksV0PI5lazDhuI=",
-        "salt": "A8g4Eu3Y5zhe91eEyYzCpQ=="
+        "password": "vNVfeGSJocD7gRyyUA9+Rm1VZTCOLh612/GATZPFzUI=",
+        "salt": "4mSfSIEaHPQozssN66madg=="
     },
-    "jose": {
-        "password": "vxf5fAAWQvHdwupajsDdAKcRbnrJ7lJ/4AppV7EGDmw=",
-        "salt": "tMN4N9aLyCPVOdaqxPMWIw=="
+    "glenn": {
+        "password": "cO+IR/E2SBgwkahGWTUY8Qun4queG0wRC0w+yOr5xXY=",
+        "salt": "G/Rv3CkTaT1E65/QLD9mWg=="
     },
-    "kevenketchum": {
-        "password": "jonO89LtVAuOgIzgHvYl525HuX3xtmd4QclpGolMPOs=",
-        "salt": "+QAnlLP1Lm+lMdH7Mi051w=="
+    "andy": {
+        "password": "jFZ+ZWasc5iCZArRnulslcCNHDQaRiM/+zSEGKZFffY=",
+        "salt": "tyzhq3dRI6KU+dQ29xqyEA=="
     }
 }
