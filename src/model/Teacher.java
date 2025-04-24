@@ -84,6 +84,34 @@ public class Teacher extends User {
     		}
     	}
     }
+
+    public String getStudentByName(String courseName) {
+    	ArrayList<Student> students = new ArrayList<Student>();
+    	for(Course c : courses) {
+    		if(c.equals(courseName)) {
+    			students = c.sortByName();
+    		}
+    	}
+    	String answer = "";
+    	for(Student s : students) {
+    		answer += s.toString();
+    	}
+    	return answer;
+    }
+    
+    public String getStudentByGrade(String courseName) {
+    	ArrayList<Student> students = new ArrayList<Student>();
+    	for(Course c : courses) {
+    		if(c.equals(courseName)) {
+    			students = c.sortByGrade();
+    		}
+    	}
+    	String answer = "";
+    	for(Student s : students) {
+    		answer += s.toString();
+    	}
+    	return answer;
+    }
     
     public void addGradeFromStudentToCourse(String courseName, String assignmnetName, String studentName, double grade) {
     	for(Course c : courses) {

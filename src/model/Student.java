@@ -85,4 +85,9 @@ public class Student extends User {
     public ArrayList<Course> getCourseList() {
         return courses;
     }
+
+    @Override
+    public String toString() {
+    	return this.username+".\n";
+    }
 }
