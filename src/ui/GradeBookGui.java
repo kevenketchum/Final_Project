@@ -2,7 +2,6 @@ package ui;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
 import logic.SecurityManager;
 import model.*;
 import java.util.List;
@@ -76,8 +75,6 @@ public class GradeBookGui extends JPanel {
                             mainPanel.add(adminPanel, "teacher");
                             cardLayout.show(mainPanel, "teacher");
                             break;
-                        default:
-                            JOptionPane.showMessageDialog(this, "Invalid role selected.");
                     }
                 } else {
                     JOptionPane.showMessageDialog(this, "Login failed. Check your credentials.");
@@ -147,7 +144,6 @@ public class GradeBookGui extends JPanel {
                 JButton adminAddStudent = new JButton("Add Student to Course");
                 buttonPanel.add(adminAddStudent);
 
-                // 🔧 FIXED SECTION: Real add-to-course logic
                 adminAddStudent.addActionListener(e -> {
                     String student = JOptionPane.showInputDialog("Enter student username:");
                     String courseName = JOptionPane.showInputDialog("Enter course name to enroll the student:");
@@ -199,11 +195,14 @@ public class GradeBookGui extends JPanel {
         }
 
         private List<String> getAllStudentNames() {
-            List<String> all = new ArrayList<>();
-            all.add("student1");
-            all.add("student2");
-            all.add("student3");
-            return all;
+            List<String> students = new ArrayList<>();
+            for (String username : gradebook.getAllUsernames()) {
+                User user = gradebook.getUser(username);
+                if (user instanceof Student) {
+                    students.add(user.getUsername());
+                }
+            }
+            return students;
         }
     }
 
